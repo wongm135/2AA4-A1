@@ -3,6 +3,7 @@ package ca.mcmaster.se2aa4.mazerunner;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import org.apache.commons.cli.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,21 +13,24 @@ public class Main {
 
     public static void main(String[] args) {
         logger.info("** Starting Maze Runner");
+
+        Options options = new Options();
+        options.addOption("i", "input", true, "Path to the input maze file");
+
+        CommandLineParser parser = new DefaultParser();
+
         try {
-            String inputFilePath = null;
-            for (int i = 0; i < args.length; i++) {
-                if ("-i".equals(args[i]) && i + 1 < args.length) {
-                    inputFilePath = args[i + 1];
-                    break;
-                }
-            }
-            if (inputFilePath == null) {
+            CommandLine cmd = parser.parse(options, args);
+
+            if (!cmd.hasOption("i")) {
                 logger.error("Input file not specified. Use the -i flag to specify the maze file.");
                 return;
             }
 
+            String inputFilePath = cmd.getOptionValue("i");
             logger.info("**** Reading the maze from file: " + inputFilePath);
-            BufferedReader reader = new BufferedReader(new FileReader(args[0]));
+
+            BufferedReader reader = new BufferedReader(new FileReader(inputFilePath));
             String line;
             while ((line = reader.readLine()) != null) {
                 for (int idx = 0; idx < line.length(); idx++) {
