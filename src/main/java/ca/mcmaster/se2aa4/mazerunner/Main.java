@@ -11,27 +11,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 class Maze {
-    private final List<String> grid;
+    private final List<List<Integer>> grid;
 
     public Maze() {
         this.grid = new ArrayList<>();
     }
 
     public void addRow(String row) {
-        grid.add(row);
+        List<Integer> rowData = new ArrayList<>();
+        for (int idx = 0; idx < row.length(); idx++) {
+            char cell = row.charAt(idx);
+            if (cell == '#') {
+                rowData.add(1); // Wall
+            } else if (cell == ' ') {
+                rowData.add(0); // Path tile
+            } else {
+                throw new IllegalArgumentException("Invalid character in maze: " + cell);
+            }
+        }
+        grid.add(rowData);
     }
 
-    public List<String> getGrid() {
+    public List<List<Integer>> getGrid() {
         return grid;
     }
 
     public void display() {
-        for (String row : grid) {
-            for (int idx = 0; idx < row.length(); idx++) {
-                char cell = row.charAt(idx);
-                if (cell == '#') {
+        for (List<Integer> row : grid) {
+            for (int cell : row) {
+                if (cell == 1) {
                     System.out.print("WALL ");
-                } else if (cell == ' ') {
+                } else if (cell == 0) {
                     System.out.print("PASS ");
                 }
             }
