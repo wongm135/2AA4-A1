@@ -64,9 +64,92 @@ class MazeReader {
 }
 
 class Explorer {
-    public void explore(Maze maze) {
-        // Placeholder for pathfinding logic
-        System.out.println("PATH NOT COMPUTED");
+
+    public String explore(Maze maze) {
+        // Retrieve the 2D grid representation
+        var grid = maze.getGrid();
+
+        // Find the starting position
+        int startRow = findStartRow(grid);
+
+        // Generate the path
+        String path = generatePath(grid, startRow);
+
+        // Print the computed path
+        System.out.println(path);
+
+        return path;
+    }
+
+    private int findStartRow(java.util.List<java.util.List<Integer>> grid) {
+        for (int row = 0; row < grid.size(); row++) {
+            if (grid.get(row).get(0) == 0) {
+                return row;
+            }
+        }
+        throw new IllegalArgumentException("No valid start found in the maze!");
+    }
+
+    // initial path generation for mvp
+    // assumes the maze is a direct path, (no dead ends)
+    private String generatePath(java.util.List<java.util.List<Integer>> grid, int startRow) {
+        StringBuilder path = new StringBuilder();
+        int[] currentDir = {1, 0}; // initially facing right
+        int currentRow = startRow;
+        int currentCol = 0;
+
+        while (currentCol < grid.get(0).size() - 1) {
+            
+            if (grid.get(currentRow-currentDir[1]).get(currentCol+currentDir[0]) == 0) {
+                path.append('F');
+                currentRow -= currentDir[1];
+                currentCol += currentDir[0];
+            } else {
+                if (currentDir[0] == 1) {
+                    if (grid.get(currentRow+1).get(currentCol) == 0) {
+                        currentDir[0] = 0;
+                        currentDir[1] = -1;
+                        path.append(" R ");
+                    } else {
+                        currentDir[0] = 0;
+                        currentDir[1] = 1;
+                        path.append(" L ");
+                    }
+                } else if (currentDir[1] == -1) {
+                    if (grid.get(currentRow).get(currentCol+1) == 0) {
+                        currentDir[0] = 1;
+                        currentDir[1] = 0;
+                        path.append(" L ");
+                    } else {
+                        currentDir[0] = -1;
+                        currentDir[1] = 0;
+                        path.append(" R ");
+                    }
+                } else if (currentDir[0] == -1) {
+                    if (grid.get(currentRow+1).get(currentCol) == 0) {
+                        currentDir[0] = 0;
+                        currentDir[1] = -1;
+                        path.append(" L ");
+                    } else {
+                        currentDir[0] = 0;
+                        currentDir[1] = 1;
+                        path.append(" R ");
+                    }
+                } else if (currentDir[1] == 1) {
+                    if (grid.get(currentRow).get(currentCol+1) == 0) {
+                        currentDir[0] = 1;
+                        currentDir[1] = 0;
+                        path.append(" R ");
+                    } else {
+                        currentDir[0] = -1;
+                        currentDir[1] = 0;
+                        path.append(" L ");
+                    }
+                }
+            }
+        }
+
+        return path.toString();
     }
 }
 
