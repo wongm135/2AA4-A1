@@ -95,7 +95,7 @@ class Explorer {
     // initial path generation for mvp
     // assumes the maze is a direct path, (no dead ends)
     private String generatePath(java.util.List<java.util.List<Integer>> grid, int startRow) {
-        StringBuilder path = new StringBuilder();
+        StringBuffer path = new StringBuffer();
         int[] currentDir = {1, 0}; // initially facing right
         int currentRow = startRow;
         int currentCol = 0;
@@ -163,7 +163,35 @@ class Explorer {
     }
 
     public String getFactorizedPath() {
-        return factorizedPath;
+        StringBuffer path = new StringBuffer();
+        int count = 0;
+        char previousChar = '\0';
+
+        for (int i = 0; i < canonicalPath.length(); i++) {
+            char currentChar = canonicalPath.charAt(i);
+
+            if (currentChar == ' ') {
+                continue;
+            }
+
+            if (currentChar == 'F') {
+                count++;
+            } else {
+                if (count > 0) {
+                    path.append(count > 1 ? count + "F " : "F ");
+                    count = 0;
+                }
+                path.append(currentChar).append(" ");
+            }
+
+            previousChar = currentChar;
+        }
+
+        if (count > 0) {
+            path.append(count > 1 ? count + "F" : "F");
+        }
+
+        return path.toString().trim();
     }
 }
 
@@ -197,6 +225,7 @@ public class Main {
             logger.info("Exploring maze...");
             Explorer explorer = new Explorer(maze);
             System.out.println(explorer.getCanonicalPath());
+            System.out.println(explorer.getFactorizedPath());
 
         } catch (Exception e) {
             logger.error("An error occurred: ", e);
