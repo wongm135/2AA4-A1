@@ -178,7 +178,11 @@ class Explorer {
                 count++;
             } else {
                 if (count > 0) {
-                    path.append(count > 1 ? count + "F " : "F ");
+                    if (count > 1) {
+                        path.append(count).append("F ");
+                    } else {
+                        path.append("F ");
+                    }
                     count = 0;
                 }
                 path.append(currentChar).append(" ");
@@ -188,7 +192,11 @@ class Explorer {
         }
 
         if (count > 0) {
-            path.append(count > 1 ? count + "F" : "F");
+            if (count > 1) {
+                path.append(count).append("F");
+            } else {
+                path.append("F");
+            }
         }
 
         return path.toString().trim();
