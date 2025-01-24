@@ -64,24 +64,26 @@ class MazeReader {
 }
 
 class Explorer {
+    protected Maze maze;
+    protected int startRow;
+    protected String canonicalPath;
+    protected String factorizedPath;
 
-    public String explore(Maze maze) {
-        // Retrieve the 2D grid representation
+    public Explorer(Maze maze) {
+        this.maze = maze;
         var grid = maze.getGrid();
 
         // Find the starting position
-        int startRow = findStartRow(grid);
+        startRow = findStartRow(grid);
 
         // Generate the path
-        String path = generatePath(grid, startRow);
+        canonicalPath = generatePath(grid, startRow);
 
-        // Print the computed path
-        System.out.println(path);
-
-        return path;
+        // Convert to factorized path
+        factorizedPath = convertPath(canonicalPath);
     }
 
-    private int findStartRow(java.util.List<java.util.List<Integer>> grid) {
+    private int findStartRow(List<List<Integer>> grid) {
         for (int row = 0; row < grid.size(); row++) {
             if (grid.get(row).get(0) == 0) {
                 return row;
@@ -151,6 +153,18 @@ class Explorer {
 
         return path.toString();
     }
+
+    private String convertPath(String path) {
+        return path;
+    }
+
+    public String getCanonicalPath() {
+        return canonicalPath;
+    }
+
+    public String getFactorizedPath() {
+        return factorizedPath;
+    }
 }
 
 public class Main {
@@ -181,8 +195,8 @@ public class Main {
             maze.display();
 
             logger.info("Exploring maze...");
-            Explorer explorer = new Explorer();
-            explorer.explore(maze);
+            Explorer explorer = new Explorer(maze);
+            System.out.println(explorer.getCanonicalPath());
 
         } catch (Exception e) {
             logger.error("An error occurred: ", e);
