@@ -80,10 +80,10 @@ class Explorer {
         canonicalPath = generatePath(grid, startRow);
 
         // Convert to factorized path
-        factorizedPath = convertPath(canonicalPath);
+        factorizedPath = convertPath();
     }
 
-    private int findStartRow(List<List<Integer>> grid) {
+    protected int findStartRow(List<List<Integer>> grid) {
         for (int row = 0; row < grid.size(); row++) {
             if (grid.get(row).get(0) == 0) {
                 return row;
@@ -94,7 +94,7 @@ class Explorer {
 
     // initial path generation for mvp
     // assumes the maze is a direct path, (no dead ends)
-    private String generatePath(java.util.List<java.util.List<Integer>> grid, int startRow) {
+    protected String generatePath(java.util.List<java.util.List<Integer>> grid, int startRow) {
         StringBuffer path = new StringBuffer();
         int[] currentDir = {1, 0}; // initially facing right
         int currentRow = startRow;
@@ -154,15 +154,7 @@ class Explorer {
         return path.toString();
     }
 
-    private String convertPath(String path) {
-        return path;
-    }
-
-    public String getCanonicalPath() {
-        return canonicalPath;
-    }
-
-    public String getFactorizedPath() {
+    protected String convertPath() {
         StringBuffer path = new StringBuffer();
         int count = 0;
         char previousChar = '\0';
@@ -200,6 +192,14 @@ class Explorer {
         }
 
         return path.toString().trim();
+    }
+
+    public String getCanonicalPath() {
+        return canonicalPath;
+    }
+
+    public String getFactorizedPath() {
+        return factorizedPath;
     }
 }
 
@@ -253,6 +253,53 @@ class PathValidator {
 
 }
 
+class RightHandExplorer extends Explorer {
+    public RightHandExplorer(Maze maze) {
+        super(maze);
+    }
+
+    @Override
+    protected String generatePath(java.util.List<java.util.List<Integer>> grid, int startRow) {
+        int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}; // Right, Down, Left, Up
+        StringBuffer path = new StringBuffer();
+        int leftLast = 0;
+        int currentDir = 0; // initially facing right
+        int currentRow = startRow;
+        int currentCol = 0;
+
+        while (currentCol < grid.get(0).size() - 1) {
+            if (grid.get(currentRow + directions[(currentDir+1)%4][0]).get(currentCol + directions[(currentDir+1)%4][1]) == 0) {
+                path.append(" R F");
+                currentDir = (currentDir+1)%4;
+                currentRow += directions[currentDir][0];
+                currentCol += directions[currentDir][1];
+                leftLast = 0;
+            } else if (grid.get(currentRow + directions[currentDir][0]).get(currentCol + directions[currentDir][1]) == 0) {
+                if (leftLast == 1) {
+                    path.append(" F");
+                } else {
+                    path.append('F');
+                }
+                currentRow += directions[currentDir][0];
+                currentCol += directions[currentDir][1];
+                leftLast = 0;
+            } else {
+                if (leftLast == 0) {
+                    path.append(" L");
+                } else {
+                    path.append('L');
+                }
+                currentDir = (currentDir+3)%4;
+                leftLast = 1;
+            }
+        }
+
+        return path.toString().strip();
+    }
+
+
+}
+
 public class Main {
 
     private static final Logger logger = LogManager.getLogger();
@@ -283,7 +330,7 @@ public class Main {
                 maze.display();
 
                 logger.info("Exploring maze...");
-                Explorer explorer = new Explorer(maze);
+                Explorer explorer = new RightHandExplorer(maze);
                 System.out.println(explorer.getCanonicalPath());
                 System.out.println(explorer.getFactorizedPath());
             } else {
