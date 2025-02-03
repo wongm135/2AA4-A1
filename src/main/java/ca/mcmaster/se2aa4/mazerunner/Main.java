@@ -85,22 +85,22 @@ class Explorer {
 
     protected int findStartRow(List<List<Integer>> grid) {
         for (int row = 0; row < grid.size(); row++) {
-            if (grid.get(row).get(0) == 0) {
+            if (grid.get(row).get(0) == 0) { // Loop until an opening is found on the left
                 return row;
             }
         }
         throw new IllegalArgumentException("No valid start found in the maze!");
     }
 
-    // initial path generation for mvp
-    // assumes the maze is a direct path, (no dead ends)
+    // Initial path generation for mvp
+    // Assumes the maze is a direct path, (no dead ends)
     protected String generatePath(java.util.List<java.util.List<Integer>> grid, int startRow) {
         StringBuffer path = new StringBuffer();
-        int[] currentDir = {1, 0}; // initially facing right
+        int[] currentDir = {1, 0}; // Initially facing right
         int currentRow = startRow;
         int currentCol = 0;
 
-        while (currentCol < grid.get(0).size() - 1) {
+        while (currentCol < grid.get(0).size() - 1) { // Loop until it reaches the right side of the maze
             
             if (grid.get(currentRow-currentDir[1]).get(currentCol+currentDir[0]) == 0) {
                 path.append('F');
@@ -156,9 +156,9 @@ class Explorer {
 
     protected String convertPath() {
         StringBuffer path = new StringBuffer();
-        int countF = 0;
-        int countR = 0;
-        int countL = 0;
+        int countF = 0; // Number of F instructions in a row
+        int countR = 0; // Number of R instructions in a row
+        int countL = 0; // Number of L instructions in a row
         char previousChar = '\0';
 
         for (int i = 0; i < canonicalPath.length(); i++) {
@@ -269,7 +269,7 @@ class PathValidator {
             } else if (move == 'R') {
                 direction = (direction + 1) % 4;
             } else if (move == 'L') {
-                direction = (direction + 3) % 4; // Add 3 to simulate a left turn
+                direction = (direction + 3) % 4; // Add 3 to make a left turn
             } else {
                 throw new IllegalArgumentException("Invalid move character: " + move);
             }
@@ -289,8 +289,8 @@ class RightHandExplorer extends Explorer {
     protected String generatePath(java.util.List<java.util.List<Integer>> grid, int startRow) {
         int[][] directions = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}}; // Right, Down, Left, Up
         StringBuffer path = new StringBuffer();
-        int leftLast = 0;
-        int currentDir = 0; // initially facing right
+        int leftLast = 0; // Signifies if the last instruction was a left turn (to handle spaces)
+        int currentDir = 0; // Initially facing right
         int currentRow = startRow;
         int currentCol = 0;
 
@@ -348,7 +348,7 @@ public class Main {
                 return;
             }
 
-            if (!cmd.hasOption("p")) {
+            if (!cmd.hasOption("p")) { // Check whether the user wants to validate or solve a maze
                 String inputFilePath = cmd.getOptionValue("i");
                 // logger.info("Reading maze from file: " + inputFilePath);
                 Maze maze = MazeReader.readFromFile(inputFilePath);
