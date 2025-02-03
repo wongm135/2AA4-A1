@@ -156,7 +156,9 @@ class Explorer {
 
     protected String convertPath() {
         StringBuffer path = new StringBuffer();
-        int count = 0;
+        int countF = 0;
+        int countR = 0;
+        int countL = 0;
         char previousChar = '\0';
 
         for (int i = 0; i < canonicalPath.length(); i++) {
@@ -167,25 +169,50 @@ class Explorer {
             }
 
             if (currentChar == 'F') {
-                count++;
-            } else {
-                if (count > 0) {
-                    if (count > 1) {
-                        path.append(count).append("F ");
+                countF++;
+            } else if (previousChar == 'F') {
+                if (countF > 0) {
+                    if (countF > 1) {
+                        path.append(countF).append("F ");
                     } else {
                         path.append("F ");
                     }
-                    count = 0;
+                    countF = 0;
                 }
-                path.append(currentChar).append(" ");
+            }
+
+            if (currentChar == 'R') {
+                countR++;
+            } else if (previousChar == 'R') {
+                if (countR > 0) {
+                    if (countR > 1) {
+                        path.append(countR).append("R ");
+                    } else {
+                        path.append("R ");
+                    }
+                    countR = 0;
+                }
+            }
+
+            if (currentChar == 'L') {
+                countL++;
+            } else if (previousChar == 'L') {
+                if (countL > 0) {
+                    if (countL > 1) {
+                        path.append(countL).append("L ");
+                    } else {
+                        path.append("L ");
+                    }
+                    countL = 0;
+                }
             }
 
             previousChar = currentChar;
         }
 
-        if (count > 0) {
-            if (count > 1) {
-                path.append(count).append("F");
+        if (countF > 0) {
+            if (countF > 1) {
+                path.append(countF).append("F");
             } else {
                 path.append("F");
             }
@@ -305,7 +332,7 @@ public class Main {
     private static final Logger logger = LogManager.getLogger();
 
     public static void main(String[] args) {
-        logger.info("** Starting Maze Runner");
+        // logger.info("** Starting Maze Runner");
 
         Options options = new Options();
         options.addOption("i", "input", true, "Path to the input maze file");
@@ -317,31 +344,33 @@ public class Main {
             CommandLine cmd = parser.parse(options, args);
 
             if (!cmd.hasOption("i")) {
-                logger.error("Input file not specified. Use the -i flag to specify the maze file.");
+                // logger.error("Input file not specified. Use the -i flag to specify the maze file.");
                 return;
             }
 
             if (!cmd.hasOption("p")) {
                 String inputFilePath = cmd.getOptionValue("i");
-                logger.info("Reading maze from file: " + inputFilePath);
+                // logger.info("Reading maze from file: " + inputFilePath);
                 Maze maze = MazeReader.readFromFile(inputFilePath);
 
-                logger.info("Displaying maze:");
+                // logger.info("Displaying maze:");
                 maze.display();
+                System.out.println();
 
-                logger.info("Exploring maze...");
+                // logger.info("Exploring maze...");
                 Explorer explorer = new RightHandExplorer(maze);
                 System.out.println(explorer.getCanonicalPath());
+                System.out.println();
                 System.out.println(explorer.getFactorizedPath());
             } else {
                 String inputFilePath = cmd.getOptionValue("i");
-                logger.info("Reading maze from file: " + inputFilePath);
+                // logger.info("Reading maze from file: " + inputFilePath);
                 Maze maze = MazeReader.readFromFile(inputFilePath);
 
-                logger.info("Displaying maze:");
+                // logger.info("Displaying maze:");
                 maze.display();
 
-                logger.info("Testing Path...");
+                // logger.info("Testing Path...");
                 String path = cmd.getOptionValue("p");
                 Boolean validPath = PathValidator.validatePath(maze.getGrid(), path);
                 if (validPath) {
@@ -351,9 +380,9 @@ public class Main {
                 }
             }
         } catch (Exception e) {
-            logger.error("An error occurred: ", e);
+            // logger.error("An error occurred: ", e);
         }
 
-        logger.info("** End of Maze Runner");
+        // logger.info("** End of Maze Runner");
     }
 }
